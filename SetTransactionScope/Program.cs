@@ -25,8 +25,17 @@ namespace SetTransactionScope
                 doc.Load(machineConfigPath);
                 XmlNode node =
                     doc.SelectSingleNode("/configuration/system.transactions/machineSettings");
-                var attribute = node.Attributes["maxTimeout"];
-                attribute.Value = "01:00:00";
+                if (node == null)
+                {
+                    node = doc.SelectSingleNode("/configuration");
+                    var systemTransactionNode = doc.CreateNode("element", "system.transactions", "");
+                    systemTransactionNode.InnerXml = @"<machineSettings maxTimeout=""01:00:00"" />";
+                    node.AppendChild(systemTransactionNode);
+                }
+                else { 
+                    var attribute = node.Attributes["maxTimeout"];
+                    attribute.Value = "01:00:00";
+                }
                 doc.Save(machineConfigPath);
             }
             catch{}
